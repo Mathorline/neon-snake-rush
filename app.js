@@ -24,6 +24,7 @@ const gridSize = 20;
 const tileCount = board.width / gridSize;
 const initialTick = 150;
 const bestScoreKey = "neon-snake-rush-best-score";
+const defaultSnakeTexturePath = "snake-skin.svg";
 
 const speedLabels = [
   { max: 4, label: "Chill" },
@@ -42,7 +43,7 @@ let tickMs = initialTick;
 let lastTickAt = 0;
 let animationFrameId = null;
 let gameState = "idle";
-let visualMode = "neon";
+let visualMode = "real";
 let snakeTextureImage = null;
 let snakeTexturePattern = null;
 let audioContext = null;
@@ -56,7 +57,7 @@ let musicStep = 0;
 let nextMusicAt = 0;
 
 bestScoreEl.textContent = String(bestScore);
-modeLabelEl.textContent = "Neon";
+modeLabelEl.textContent = "Real Snake";
 
 function ensureAudio() {
   if (!audioContext) {
@@ -436,6 +437,10 @@ function setSnakeTextureFromSource(source) {
   nextImage.src = source;
 }
 
+function loadDefaultSnakeTexture() {
+  setSnakeTextureFromSource(defaultSnakeTexturePath);
+}
+
 function handleSnakeImageUpload(event) {
   const [file] = event.target.files || [];
   if (!file) {
@@ -450,10 +455,9 @@ function handleSnakeImageUpload(event) {
 }
 
 function clearSnakeTexture() {
-  snakeTextureImage = null;
-  snakeTexturePattern = null;
   snakeImageInput.value = "";
-  updateStatus("Uploaded snake image cleared. Real mode will use the built-in textured snake.");
+  loadDefaultSnakeTexture();
+  updateStatus("Reverted to the default snake image.");
 }
 
 function stepGame() {
@@ -740,4 +744,6 @@ touchButtons.forEach((button) => {
 
 resetGame();
 updateAudioButtons();
+setVisualMode("real");
+loadDefaultSnakeTexture();
 render();
