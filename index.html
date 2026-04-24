@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neon Snake Rush</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero-panel">
+      <p class="eyebrow">Arcade Lab</p>
+      <h1>Neon Snake Rush</h1>
+      <p class="hero-copy">
+        Chase the glowing fruit, grow your trail, and stay clear of the walls and your own tail.
+        The pace ramps up as your score climbs.
+      </p>
+
+      <div class="stats-grid">
+        <article class="stat-card">
+          <span class="stat-label">Score</span>
+          <strong id="score">0</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">High Score</span>
+          <strong id="best-score">0</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">Speed</span>
+          <strong id="speed-label">Chill</strong>
+        </article>
+      </div>
+
+      <div class="controls-card">
+        <button id="start-button" class="primary-button" type="button">Start Game</button>
+        <button id="pause-button" class="ghost-button" type="button">Pause</button>
+        <button id="share-button" class="ghost-button share-button" type="button">Share on Reddit</button>
+        <div class="audio-row">
+          <button id="music-toggle-button" class="mini-toggle active" type="button">Music On</button>
+          <button id="sfx-toggle-button" class="mini-toggle active" type="button">SFX On</button>
+        </div>
+        <p id="status" class="status-text">Press start or hit space to begin.</p>
+      </div>
+
+      <div class="mode-card">
+        <div class="mode-header">
+          <span class="stat-label">Snake Look</span>
+          <strong id="mode-label">Neon</strong>
+        </div>
+        <div class="mode-toggle" role="group" aria-label="Snake visual mode">
+          <button id="neon-mode-button" class="mode-button active" type="button">Neon</button>
+          <button id="real-mode-button" class="mode-button" type="button">Real Snake</button>
+        </div>
+      </div>
+
+      <div class="ai-card">
+        <div class="ai-copy">
+          <span class="stat-label">AI Snake Lab</span>
+          <p>
+            Paste this prompt into your image model, then upload the generated snake art to skin the
+            snake in real mode.
+          </p>
+        </div>
+        <textarea id="image-prompt" class="prompt-box" rows="5">Photorealistic coiled green tree snake texture sheet, top-down game-friendly lighting, crisp scale detail, isolated subject, no background clutter, square image, suitable for cropping into a snake game skin.</textarea>
+        <div class="ai-actions">
+          <button id="copy-prompt-button" class="ghost-button share-button" type="button">Copy Prompt</button>
+          <label class="upload-button" for="snake-image-input">Upload Snake Image</label>
+          <input id="snake-image-input" type="file" accept="image/*">
+          <button id="clear-image-button" class="ghost-button share-button" type="button">Clear Uploaded Image</button>
+        </div>
+      </div>
+
+      <div class="tips">
+        <span>Move: Arrow keys or WASD</span>
+        <span>Pause: Space</span>
+        <span>Restart: Enter after game over</span>
+      </div>
+
+      <div class="touch-controls" aria-label="Touch controls">
+        <button class="control-button up" data-direction="up" type="button" aria-label="Move up">UP</button>
+        <button class="control-button left" data-direction="left" type="button" aria-label="Move left">LT</button>
+        <button class="control-button right" data-direction="right" type="button" aria-label="Move right">RT</button>
+        <button class="control-button down" data-direction="down" type="button" aria-label="Move down">DN</button>
+      </div>
+    </section>
+
+    <section class="game-panel">
+      <div class="board-frame">
+        <canvas id="game-board" width="560" height="560" aria-label="Snake game board"></canvas>
+        <div id="overlay" class="overlay visible" aria-live="polite">
+          <div class="overlay-card">
+            <p class="overlay-kicker">Ready when you are</p>
+            <h2>Guide the snake.</h2>
+            <p>Collect fruit, dodge the edges, and see how long you can keep the run alive.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
