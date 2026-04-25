@@ -11,24 +11,14 @@
     <section class="hero-panel">
       <p class="eyebrow">Arcade Lab</p>
       <h1>Neon Snake Rush</h1>
-      <p class="hero-copy">
-        Chase the glowing fruit, grow your trail, and stay clear of the walls and your own tail.
-        The pace ramps up as your score climbs.
-      </p>
+      <p class="hero-copy">Chase the glowing fruit, grow your trail, and stay clear of the walls, obstacles, and your own tail. Combos and power-ups make every run nastier.</p>
 
       <div class="stats-grid">
-        <article class="stat-card">
-          <span class="stat-label">Score</span>
-          <strong id="score">0</strong>
-        </article>
-        <article class="stat-card">
-          <span class="stat-label">High Score</span>
-          <strong id="best-score">0</strong>
-        </article>
-        <article class="stat-card">
-          <span class="stat-label">Speed</span>
-          <strong id="speed-label">Chill</strong>
-        </article>
+        <article class="stat-card"><span class="stat-label">Score</span><strong id="score">0</strong></article>
+        <article class="stat-card"><span class="stat-label">High Score</span><strong id="best-score">0</strong></article>
+        <article class="stat-card"><span class="stat-label">Speed</span><strong id="speed-label">Chill</strong></article>
+        <article class="stat-card"><span class="stat-label">Combo</span><strong id="combo-label">x1</strong></article>
+        <article class="stat-card power-stat"><span class="stat-label">Power</span><strong id="power-label">None</strong></article>
       </div>
 
       <div class="controls-card">
@@ -52,10 +42,7 @@
       </div>
 
       <div class="mode-card">
-        <div class="mode-header">
-          <span class="stat-label">Snake Look</span>
-          <strong id="mode-label">Real Snake</strong>
-        </div>
+        <div class="mode-header"><span class="stat-label">Snake Look</span><strong id="mode-label">Real Snake</strong></div>
         <div class="mode-toggle" role="group" aria-label="Snake visual mode">
           <button id="neon-mode-button" class="mode-button" type="button">Neon</button>
           <button id="real-mode-button" class="mode-button active" type="button">Real Snake</button>
@@ -63,10 +50,7 @@
       </div>
 
       <div class="mode-card">
-        <div class="mode-header">
-          <span class="stat-label">Board View</span>
-          <strong id="view-label">3D</strong>
-        </div>
+        <div class="mode-header"><span class="stat-label">Board View</span><strong id="view-label">3D</strong></div>
         <div class="mode-toggle board-view-toggle" role="group" aria-label="Board view mode">
           <button id="view-2d-button" class="mode-button" type="button">2D</button>
           <button id="view-3d-button" class="mode-button active" type="button">3D</button>
@@ -77,10 +61,7 @@
       <div class="ai-card">
         <div class="ai-copy">
           <span class="stat-label">AI Snake Lab</span>
-          <p>
-            Paste this prompt into your image model, then upload the generated snake art to skin the
-            snake in real mode.
-          </p>
+          <p>Paste this prompt into your image model, then upload the generated snake art to skin the snake in real mode.</p>
         </div>
         <textarea id="image-prompt" class="prompt-box" rows="5">Photorealistic coiled green tree snake texture sheet, top-down game-friendly lighting, crisp scale detail, isolated subject, no background clutter, square image, suitable for cropping into a snake game skin.</textarea>
         <div class="ai-actions">
@@ -95,10 +76,9 @@
         <span>Move: Arrow keys or WASD</span>
         <span>Pause: Space</span>
         <span>Restart: Enter after game over</span>
+        <span>Power-ups: gold bonus, cyan slow-mo, emerald shield</span>
       </div>
-
       <p class="mobile-hint">On phones, swipe across the board or use the touch pad below.</p>
-
       <div class="touch-controls" aria-label="Touch controls">
         <button class="control-button up" data-direction="up" type="button" aria-label="Move up">UP</button>
         <button class="control-button left" data-direction="left" type="button" aria-label="Move left">LT</button>
@@ -111,16 +91,12 @@
       <div class="board-frame">
         <canvas id="game-board" width="560" height="560" aria-label="Snake game board"></canvas>
         <div id="overlay" class="overlay visible" aria-live="polite">
-          <div class="overlay-card">
-            <p class="overlay-kicker">Ready when you are</p>
-            <h2>Guide the snake.</h2>
-            <p>Collect fruit, dodge the edges, and see how long you can keep the run alive.</p>
-          </div>
+          <div class="overlay-card"><p class="overlay-kicker">Ready when you are</p><h2>Guide the snake.</h2><p>Collect fruit, dodge the edges, and see how long you can keep the run alive.</p></div>
         </div>
       </div>
     </section>
   </main>
 
-  <script src="loader.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
