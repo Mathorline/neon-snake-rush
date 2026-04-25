@@ -34,7 +34,16 @@
       <div class="controls-card">
         <button id="start-button" class="primary-button" type="button">Start Game</button>
         <button id="pause-button" class="ghost-button" type="button">Pause</button>
-        <button id="share-button" class="ghost-button share-button" type="button">Share on Reddit</button>
+        <button id="share-button" class="ghost-button share-button" type="button">Share Score</button>
+        <div class="share-grid" aria-label="Share score">
+          <button class="share-option" type="button" data-share-target="reddit">Reddit</button>
+          <button class="share-option" type="button" data-share-target="x">X</button>
+          <button class="share-option" type="button" data-share-target="facebook">Facebook</button>
+          <button class="share-option" type="button" data-share-target="whatsapp">WhatsApp</button>
+          <button class="share-option" type="button" data-share-target="telegram">Telegram</button>
+          <button class="share-option" type="button" data-share-target="email">Email</button>
+          <button class="share-option wide" type="button" data-share-target="copy">Copy Link</button>
+        </div>
         <div class="audio-row">
           <button id="music-toggle-button" class="mini-toggle active" type="button">Music On</button>
           <button id="sfx-toggle-button" class="mini-toggle active" type="button">SFX On</button>
@@ -58,9 +67,10 @@
           <span class="stat-label">Board View</span>
           <strong id="view-label">3D</strong>
         </div>
-        <div class="mode-toggle" role="group" aria-label="Board view mode">
+        <div class="mode-toggle board-view-toggle" role="group" aria-label="Board view mode">
           <button id="view-2d-button" class="mode-button" type="button">2D</button>
           <button id="view-3d-button" class="mode-button active" type="button">3D</button>
+          <button id="view-chase-button" class="mode-button" type="button">Chase</button>
         </div>
       </div>
 
@@ -111,6 +121,6 @@
     </section>
   </main>
 
-  <script src="app.js"></script>
+  <script src="loader.js"></script>
 </body>
 </html>
