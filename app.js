@@ -55,6 +55,7 @@ let musicEnabled = true;
 let sfxEnabled = true;
 let musicStep = 0;
 let nextMusicAt = 0;
+let touchStartPoint = null;
 
 bestScoreEl.textContent = String(bestScore);
 modeLabelEl.textContent = "Real Snake";
@@ -165,6 +166,12 @@ function triggerShake(strength = 8, duration = 180) {
     strength,
     until: performance.now() + duration
   };
+}
+
+function vibrate(pattern) {
+  if (typeof navigator.vibrate === "function") {
+    navigator.vibrate(pattern);
+  }
 }
 
 function spawnParticles(x, y, color, count) {
@@ -282,6 +289,7 @@ function startGame() {
     nextMusicAt = audioContext.currentTime + 0.05;
   }
   playTone({ frequency: 320, duration: 0.18, type: "triangle", slideTo: 480, volume: 0.045 });
+  vibrate(20);
   if (!animationFrameId) {
     animationFrameId = requestAnimationFrame(gameLoop);
   }
@@ -329,6 +337,7 @@ function endGame() {
   triggerShake(14, 280);
   triggerFlash();
   playTone({ frequency: 220, duration: 0.34, type: "sawtooth", slideTo: 70, volume: 0.07 });
+  vibrate([50, 40, 90]);
 }
 
 function buildRedditShareUrl() {
@@ -458,6 +467,70 @@ function clearSnakeTexture() {
   snakeImageInput.value = "";
   loadDefaultSnakeTexture();
   updateStatus("Reverted to the default snake image.");
+}
+
+function applyDirection(directionName) {
+  if (directionName === "up") {
+    setDirection(0, -1);
+  } else if (directionName === "down") {
+    setDirection(0, 1);
+  } else if (directionName === "left") {
+    setDirection(-1, 0);
+  } else if (directionName === "right") {
+    setDirection(1, 0);
+  }
+
+  if (gameState === "idle") {
+    startGame();
+  }
+}
+
+function handleBoardTouchStart(event) {
+  const touch = event.touches[0];
+  if (!touch) {
+    return;
+  }
+
+  touchStartPoint = {
+    x: touch.clientX,
+    y: touch.clientY
+  };
+}
+
+function handleBoardTouchMove(event) {
+  if (!touchStartPoint) {
+    return;
+  }
+
+  const touch = event.touches[0];
+  if (!touch) {
+    return;
+  }
+
+  const deltaX = touch.clientX - touchStartPoint.x;
+  const deltaY = touch.clientY - touchStartPoint.y;
+  const threshold = 18;
+
+  if (Math.abs(deltaX) < threshold && Math.abs(deltaY) < threshold) {
+    return;
+  }
+
+  event.preventDefault();
+
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    applyDirection(deltaX > 0 ? "right" : "left");
+  } else {
+    applyDirection(deltaY > 0 ? "down" : "up");
+  }
+
+  touchStartPoint = {
+    x: touch.clientX,
+    y: touch.clientY
+  };
+}
+
+function handleBoardTouchEnd() {
+  touchStartPoint = null;
 }
 
 function stepGame() {
@@ -725,22 +798,14 @@ snakeImageInput.addEventListener("change", handleSnakeImageUpload);
 clearImageButton.addEventListener("click", clearSnakeTexture);
 touchButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    const directionName = button.dataset.direction;
-    if (directionName === "up") {
-      setDirection(0, -1);
-    } else if (directionName === "down") {
-      setDirection(0, 1);
-    } else if (directionName === "left") {
-      setDirection(-1, 0);
-    } else if (directionName === "right") {
-      setDirection(1, 0);
-    }
-
-    if (gameState === "idle") {
-      startGame();
-    }
+    applyDirection(button.dataset.direction);
   });
 });
+
+board.addEventListener("touchstart", handleBoardTouchStart, { passive: true });
+board.addEventListener("touchmove", handleBoardTouchMove, { passive: false });
+board.addEventListener("touchend", handleBoardTouchEnd);
+board.addEventListener("touchcancel", handleBoardTouchEnd);
 
 resetGame();
 updateAudioButtons();
