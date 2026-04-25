@@ -167,6 +167,10 @@ h1 {
   margin-top: 14px;
 }
 
+.board-view-toggle {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .mode-button {
   border: 1px solid rgba(146, 230, 255, 0.12);
   border-radius: 16px;
@@ -256,6 +260,36 @@ h1 {
   margin-top: 10px;
   margin-left: 0;
   width: 100%;
+}
+
+.share-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.share-option {
+  border: 1px solid rgba(146, 230, 255, 0.14);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+}
+
+.share-option.wide {
+  grid-column: 1 / -1;
+}
+
+.share-option:hover {
+  transform: translateY(-1px);
+  background: rgba(87, 242, 194, 0.1);
+  border-color: rgba(87, 242, 194, 0.28);
 }
 
 .primary-button:hover,
@@ -395,6 +429,11 @@ h1 {
 body.view-2d #game-board {
   transform: none;
   filter: none;
+}
+
+body.view-chase #game-board {
+  transform: rotateX(50deg) translateY(10px) scale(1.03);
+  filter: drop-shadow(0 42px 58px rgba(0, 0, 0, 0.5));
 }
 
 .overlay {
@@ -540,6 +579,10 @@ body.view-2d #game-board {
 
   body.view-2d #game-board {
     transform: none;
+  }
+
+  body.view-chase #game-board {
+    transform: rotateX(46deg) translateY(8px) scale(1.02);
   }
 
   .overlay {
