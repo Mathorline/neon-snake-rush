@@ -313,31 +313,40 @@ h1 {
   font-size: 0.9rem;
 }
 
+.mobile-hint {
+  display: none;
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
+
 .touch-controls {
   display: none;
-  grid-template-columns: repeat(3, 64px);
+  grid-template-columns: repeat(3, 76px);
   grid-template-areas:
     ". up ."
     "left . right"
     ". down .";
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   margin-top: 22px;
 }
 
 .control-button {
-  width: 64px;
-  height: 64px;
+  width: 76px;
+  height: 76px;
   border: 1px solid rgba(146, 230, 255, 0.16);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.06);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.08);
   color: var(--text);
   font: inherit;
-  font-size: 0.92rem;
+  font-size: 0.98rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   cursor: pointer;
   touch-action: manipulation;
+  box-shadow: 0 12px 24px rgba(2, 10, 18, 0.24);
 }
 
 .control-button.up {
@@ -372,6 +381,7 @@ h1 {
   width: 100%;
   height: auto;
   border-radius: 22px;
+  touch-action: none;
   background:
     linear-gradient(180deg, rgba(6, 20, 31, 0.98), rgba(5, 15, 24, 0.98));
 }
@@ -464,11 +474,24 @@ h1 {
 }
 
 @media (max-width: 640px) {
+  body {
+    overflow-x: hidden;
+  }
+
   .hero-panel {
-    padding: 24px;
+    padding: 22px;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 11vw, 3rem);
   }
 
   .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-toggle,
+  .ai-actions {
     grid-template-columns: 1fr;
   }
 
@@ -486,7 +509,21 @@ h1 {
     display: grid;
   }
 
+  .mobile-hint {
+    display: block;
+  }
+
   .audio-row {
     grid-template-columns: 1fr;
+  }
+
+  .board-frame {
+    width: min(100vw - 16px, 560px);
+    padding: 12px;
+    border-radius: 24px;
+  }
+
+  .overlay {
+    inset: 12px;
   }
 }
