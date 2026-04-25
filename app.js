@@ -11,8 +11,11 @@ const shareButton = document.getElementById("share-button");
 const musicToggleButton = document.getElementById("music-toggle-button");
 const sfxToggleButton = document.getElementById("sfx-toggle-button");
 const modeLabelEl = document.getElementById("mode-label");
+const viewLabelEl = document.getElementById("view-label");
 const neonModeButton = document.getElementById("neon-mode-button");
 const realModeButton = document.getElementById("real-mode-button");
+const view2dButton = document.getElementById("view-2d-button");
+const view3dButton = document.getElementById("view-3d-button");
 const imagePromptEl = document.getElementById("image-prompt");
 const copyPromptButton = document.getElementById("copy-prompt-button");
 const snakeImageInput = document.getElementById("snake-image-input");
@@ -45,6 +48,7 @@ let lastTickAt = 0;
 let animationFrameId = null;
 let gameState = "idle";
 let visualMode = "real";
+let boardViewMode = "3d";
 let snakeTextureImage = null;
 let snakeTexturePattern = null;
 let audioContext = null;
@@ -60,6 +64,7 @@ let touchStartPoint = null;
 
 bestScoreEl.textContent = String(bestScore);
 modeLabelEl.textContent = "Real Snake";
+viewLabelEl.textContent = "3D";
 
 function ensureAudio() {
   if (!audioContext) {
@@ -410,6 +415,16 @@ function setVisualMode(nextMode) {
   );
 }
 
+function setBoardViewMode(nextMode) {
+  boardViewMode = nextMode;
+  const is3dMode = nextMode === "3d";
+  document.body.classList.toggle("view-2d", !is3dMode);
+  viewLabelEl.textContent = is3dMode ? "3D" : "2D";
+  view2dButton.classList.toggle("active", !is3dMode);
+  view3dButton.classList.toggle("active", is3dMode);
+  updateStatus(is3dMode ? "3D board view active." : "2D board view active.");
+}
+
 async function copyImagePrompt() {
   const prompt = imagePromptEl.value.trim();
   if (!prompt) {
@@ -599,6 +614,10 @@ function drawBoardGlow() {
     }
   }
 
+  if (boardViewMode !== "3d") {
+    return;
+  }
+
   ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
   ctx.fillRect(0, 0, board.width, 3);
   ctx.fillRect(0, 0, 3, board.height);
@@ -629,6 +648,11 @@ function drawSnakeShadow(x, y, size, lift, alpha) {
 }
 
 function drawFood() {
+  if (boardViewMode !== "3d") {
+    drawFoodFlat();
+    return;
+  }
+
   const centerX = food.x * gridSize + gridSize / 2;
   const centerY = food.y * gridSize + gridSize / 2;
   const radius = gridSize * (0.24 + Math.sin(pulseTick) * 0.03 + 0.06);
@@ -664,7 +688,32 @@ function drawFood() {
   ctx.stroke();
 }
 
+function drawFoodFlat() {
+  const centerX = food.x * gridSize + gridSize / 2;
+  const centerY = food.y * gridSize + gridSize / 2;
+  const radius = gridSize * (0.28 + Math.sin(pulseTick) * 0.03 + 0.06);
+
+  const foodGlow = ctx.createRadialGradient(centerX, centerY, 2, centerX, centerY, gridSize * 0.55);
+  foodGlow.addColorStop(0, "#ffd8de");
+  foodGlow.addColorStop(1, "rgba(255, 95, 114, 0.12)");
+
+  ctx.fillStyle = foodGlow;
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, gridSize * 0.55, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#ff5f72";
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+  ctx.fill();
+}
+
 function drawNeonSnake() {
+  if (boardViewMode !== "3d") {
+    drawNeonSnakeFlat();
+    return;
+  }
+
   snake.forEach((segment, index) => {
     const x = segment.x * gridSize;
     const y = segment.y * gridSize;
@@ -688,7 +737,28 @@ function drawNeonSnake() {
   ctx.shadowBlur = 0;
 }
 
+function drawNeonSnakeFlat() {
+  snake.forEach((segment, index) => {
+    const x = segment.x * gridSize;
+    const y = segment.y * gridSize;
+    const isHead = index === 0;
+
+    ctx.fillStyle = isHead ? "#a8ffe9" : "#57f2c2";
+    ctx.shadowColor = isHead ? "rgba(168, 255, 233, 0.8)" : "rgba(87, 242, 194, 0.45)";
+    ctx.shadowBlur = isHead ? 14 : 8;
+    roundRect(ctx, x + 1.5, y + 1.5, gridSize - 3, gridSize - 3, 6);
+    ctx.fill();
+  });
+
+  ctx.shadowBlur = 0;
+}
+
 function drawRealSnake() {
+  if (boardViewMode !== "3d") {
+    drawRealSnakeFlat();
+    return;
+  }
+
   snake.forEach((segment, index) => {
     const x = segment.x * gridSize;
     const y = segment.y * gridSize;
@@ -738,6 +808,60 @@ function drawRealSnake() {
     ctx.strokeStyle = isHead ? "rgba(255, 248, 214, 0.36)" : "rgba(24, 32, 10, 0.32)";
     ctx.lineWidth = 1.2;
     roundRect(ctx, x + 1, y + 1, size, size, 7);
+    ctx.stroke();
+
+    if (isHead) {
+      ctx.fillStyle = "#141806";
+      const leftEyeX = x + gridSize * 0.34;
+      const rightEyeX = x + gridSize * 0.66;
+      const eyeY = y + gridSize * 0.38;
+      ctx.beginPath();
+      ctx.arc(leftEyeX, eyeY, 1.6, 0, Math.PI * 2);
+      ctx.arc(rightEyeX, eyeY, 1.6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  });
+}
+
+function drawRealSnakeFlat() {
+  snake.forEach((segment, index) => {
+    const x = segment.x * gridSize;
+    const y = segment.y * gridSize;
+    const isHead = index === 0;
+
+    ctx.save();
+    roundRect(ctx, x + 1, y + 1, gridSize - 2, gridSize - 2, 7);
+    ctx.clip();
+
+    if (snakeTexturePattern) {
+      ctx.fillStyle = snakeTexturePattern;
+      ctx.save();
+      ctx.translate((index * 6) % gridSize, (index * 4) % gridSize);
+      ctx.fillRect(x - gridSize, y - gridSize, gridSize * 3, gridSize * 3);
+      ctx.restore();
+    } else {
+      const bodyGradient = ctx.createLinearGradient(x, y, x + gridSize, y + gridSize);
+      bodyGradient.addColorStop(0, isHead ? "#a6b56b" : "#8c9b55");
+      bodyGradient.addColorStop(0.5, isHead ? "#7f8c46" : "#64732e");
+      bodyGradient.addColorStop(1, "#45501f");
+      ctx.fillStyle = bodyGradient;
+      ctx.fillRect(x, y, gridSize, gridSize);
+
+      ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
+      for (let scaleY = y + 3; scaleY < y + gridSize; scaleY += 5) {
+        for (let scaleX = x + ((scaleY / 5) % 2 === 0 ? 3 : 5); scaleX < x + gridSize; scaleX += 7) {
+          ctx.beginPath();
+          ctx.arc(scaleX, scaleY, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+
+    ctx.restore();
+
+    ctx.strokeStyle = isHead ? "rgba(255, 248, 214, 0.36)" : "rgba(24, 32, 10, 0.32)";
+    ctx.lineWidth = 1.2;
+    roundRect(ctx, x + 1, y + 1, gridSize - 2, gridSize - 2, 7);
     ctx.stroke();
 
     if (isHead) {
@@ -858,6 +982,8 @@ musicToggleButton.addEventListener("click", toggleMusic);
 sfxToggleButton.addEventListener("click", toggleSfx);
 neonModeButton.addEventListener("click", () => setVisualMode("neon"));
 realModeButton.addEventListener("click", () => setVisualMode("real"));
+view2dButton.addEventListener("click", () => setBoardViewMode("2d"));
+view3dButton.addEventListener("click", () => setBoardViewMode("3d"));
 copyPromptButton.addEventListener("click", copyImagePrompt);
 snakeImageInput.addEventListener("change", handleSnakeImageUpload);
 clearImageButton.addEventListener("click", clearSnakeTexture);
@@ -875,5 +1001,6 @@ board.addEventListener("touchcancel", handleBoardTouchEnd);
 resetGame();
 updateAudioButtons();
 setVisualMode("real");
+setBoardViewMode("3d");
 loadDefaultSnakeTexture();
 render();
