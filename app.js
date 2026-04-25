@@ -32,6 +32,7 @@ const speedLabels = [
   { max: 14, label: "Fast" },
   { max: Infinity, label: "Wild" }
 ];
+const blockLift = 8;
 
 let snake = [];
 let direction = { x: 1, y: 0 };
@@ -578,13 +579,13 @@ function stepGame() {
 }
 
 function drawBoardGlow() {
-  ctx.fillStyle = "#07131d";
+  ctx.fillStyle = "#04101a";
   ctx.fillRect(0, 0, board.width, board.height);
 
   const skyGradient = ctx.createLinearGradient(0, 0, board.width, board.height);
-  skyGradient.addColorStop(0, "rgba(30, 88, 122, 0.14)");
+  skyGradient.addColorStop(0, "rgba(52, 123, 171, 0.18)");
   skyGradient.addColorStop(0.55, "rgba(10, 26, 41, 0)");
-  skyGradient.addColorStop(1, "rgba(87, 242, 194, 0.08)");
+  skyGradient.addColorStop(1, "rgba(87, 242, 194, 0.1)");
   ctx.fillStyle = skyGradient;
   ctx.fillRect(0, 0, board.width, board.height);
 
@@ -597,26 +598,70 @@ function drawBoardGlow() {
       ctx.fillRect(x * gridSize, y * gridSize, gridSize - 1, gridSize - 1);
     }
   }
+
+  ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
+  ctx.fillRect(0, 0, board.width, 3);
+  ctx.fillRect(0, 0, 3, board.height);
+
+  ctx.fillStyle = "rgba(3, 10, 17, 0.42)";
+  ctx.fillRect(0, board.height - 6, board.width, 6);
+  ctx.fillRect(board.width - 6, 0, 6, board.height);
+}
+
+function drawRaisedTile(x, y, width, height, lift, topFill, sideFill, frontFill, radius = 6) {
+  ctx.fillStyle = sideFill;
+  roundRect(ctx, x + lift, y + lift, width, height, radius);
+  ctx.fill();
+
+  ctx.fillStyle = frontFill;
+  roundRect(ctx, x, y + lift * 0.5, width, height, radius);
+  ctx.fill();
+
+  ctx.fillStyle = topFill;
+  roundRect(ctx, x, y, width, height, radius);
+  ctx.fill();
+}
+
+function drawSnakeShadow(x, y, size, lift, alpha) {
+  ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+  roundRect(ctx, x + lift + 2, y + lift + 4, size - 2, size - 2, 7);
+  ctx.fill();
 }
 
 function drawFood() {
   const centerX = food.x * gridSize + gridSize / 2;
   const centerY = food.y * gridSize + gridSize / 2;
-  const radius = gridSize * (0.28 + Math.sin(pulseTick) * 0.03 + 0.06);
+  const radius = gridSize * (0.24 + Math.sin(pulseTick) * 0.03 + 0.06);
+  const lift = 12 + Math.sin(pulseTick) * 3;
 
-  const foodGlow = ctx.createRadialGradient(centerX, centerY, 2, centerX, centerY, gridSize * 0.55);
+  const foodGlow = ctx.createRadialGradient(centerX, centerY - lift * 0.4, 2, centerX, centerY - lift * 0.4, gridSize * 0.9);
   foodGlow.addColorStop(0, "#ffd8de");
   foodGlow.addColorStop(1, "rgba(255, 95, 114, 0.12)");
 
   ctx.fillStyle = foodGlow;
   ctx.beginPath();
-  ctx.arc(centerX, centerY, gridSize * 0.55, 0, Math.PI * 2);
+  ctx.arc(centerX, centerY - lift * 0.4, gridSize * 0.9, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = "#ff5f72";
+  ctx.fillStyle = "rgba(0, 0, 0, 0.28)";
   ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+  ctx.ellipse(centerX + 7, centerY + 10, gridSize * 0.34, gridSize * 0.2, 0, 0, Math.PI * 2);
   ctx.fill();
+
+  const fruitGradient = ctx.createRadialGradient(centerX - radius * 0.4, centerY - lift - radius * 0.7, radius * 0.2, centerX, centerY - lift, radius * 1.4);
+  fruitGradient.addColorStop(0, "#fff0f2");
+  fruitGradient.addColorStop(0.4, "#ff8ea0");
+  fruitGradient.addColorStop(1, "#d93c52");
+  ctx.fillStyle = fruitGradient;
+  ctx.beginPath();
+  ctx.arc(centerX, centerY - lift, radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.32)";
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.arc(centerX, centerY - lift, radius, 0, Math.PI * 2);
+  ctx.stroke();
 }
 
 function drawNeonSnake() {
@@ -624,12 +669,20 @@ function drawNeonSnake() {
     const x = segment.x * gridSize;
     const y = segment.y * gridSize;
     const isHead = index === 0;
+    const size = gridSize - 3;
+    const topFill = isHead ? "#bbfff0" : "#5df4c5";
+    const sideFill = isHead ? "rgba(52, 142, 131, 0.95)" : "rgba(30, 111, 101, 0.95)";
+    const frontFill = isHead ? "rgba(34, 126, 116, 0.95)" : "rgba(22, 85, 78, 0.95)";
 
-    ctx.fillStyle = isHead ? "#a8ffe9" : "#57f2c2";
-    ctx.shadowColor = isHead ? "rgba(168, 255, 233, 0.8)" : "rgba(87, 242, 194, 0.45)";
+    drawSnakeShadow(x, y, size, blockLift, isHead ? 0.22 : 0.18);
+    ctx.shadowColor = isHead ? "rgba(168, 255, 233, 0.55)" : "rgba(87, 242, 194, 0.32)";
     ctx.shadowBlur = isHead ? 14 : 8;
-    roundRect(ctx, x + 1.5, y + 1.5, gridSize - 3, gridSize - 3, 6);
-    ctx.fill();
+    drawRaisedTile(x + 1.5, y + 1.5, size, size, blockLift, topFill, sideFill, frontFill, 6);
+
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.18)";
+    ctx.lineWidth = 1;
+    roundRect(ctx, x + 1.5, y + 1.5, size, size, 6);
+    ctx.stroke();
   });
 
   ctx.shadowBlur = 0;
@@ -640,9 +693,20 @@ function drawRealSnake() {
     const x = segment.x * gridSize;
     const y = segment.y * gridSize;
     const isHead = index === 0;
+    const size = gridSize - 2;
+
+    drawSnakeShadow(x, y, size, blockLift, isHead ? 0.24 : 0.2);
+
+    ctx.fillStyle = isHead ? "rgba(82, 102, 34, 0.95)" : "rgba(67, 82, 28, 0.95)";
+    roundRect(ctx, x + blockLift, y + blockLift, size, size, 7);
+    ctx.fill();
+
+    ctx.fillStyle = isHead ? "rgba(100, 122, 40, 0.95)" : "rgba(84, 103, 33, 0.95)";
+    roundRect(ctx, x + 2, y + blockLift * 0.55, size, size, 7);
+    ctx.fill();
 
     ctx.save();
-    roundRect(ctx, x + 1, y + 1, gridSize - 2, gridSize - 2, 7);
+    roundRect(ctx, x + 1, y + 1, size, size, 7);
     ctx.clip();
 
     if (snakeTexturePattern) {
@@ -673,7 +737,7 @@ function drawRealSnake() {
 
     ctx.strokeStyle = isHead ? "rgba(255, 248, 214, 0.36)" : "rgba(24, 32, 10, 0.32)";
     ctx.lineWidth = 1.2;
-    roundRect(ctx, x + 1, y + 1, gridSize - 2, gridSize - 2, 7);
+    roundRect(ctx, x + 1, y + 1, size, size, 7);
     ctx.stroke();
 
     if (isHead) {
@@ -721,6 +785,7 @@ function roundRect(context, x, y, width, height, radius) {
 
 function render() {
   ctx.save();
+  ctx.clearRect(0, 0, board.width, board.height);
 
   const now = performance.now();
   const shakeActive = now < shake.until;
